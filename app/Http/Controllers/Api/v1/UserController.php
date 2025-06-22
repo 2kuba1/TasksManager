@@ -38,4 +38,10 @@ class UserController extends Controller
         return response()->noContent();
     }
 
+    public function getUser(Request $request)
+    {
+        $user = $request->user();
+        return response()->json($user, ResponseAlias::HTTP_OK);
+    }
+
 }

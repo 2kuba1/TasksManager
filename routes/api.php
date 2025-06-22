@@ -23,4 +23,5 @@ Route::prefix('v1/users')->group(function (){
     Route::post('/register', [UserController::class, 'register'])->middleware('api');
     Route::post('/login', [UserController::class, 'login'])->middleware('api');
     Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('/getUser', [UserController::class, 'getUser'])->middleware('auth:sanctum');
 });

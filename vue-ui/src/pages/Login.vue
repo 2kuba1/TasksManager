@@ -1,7 +1,45 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import AppBar from "../components/AppBar.vue";
-function handleLogin() {}
+import axios from "axios";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const emailValue = ref("");
+const passwordValue = ref("");
+const loginError = ref(null);
+const router = useRouter();
+
+async function handleLogin() {
+    loginError.value = "";
+    try {
+        const response = await axios.post(
+            "http://localhost:8000/api/v1/users/login",
+            {
+                email: emailValue.value,
+                password: passwordValue.value,
+            },
+            {
+                headers: {
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        document.cookie = `token=${response.data.token}; path=/; SameSite=Lax`;
+        localStorage.setItem("name", response.data.user.name);
+        localStorage.setItem("id", response.data.user.id);
+        localStorage.setItem("role_id", response.data.user.role_id);
+        localStorage.setItem("email", response.data.user.email);
+
+        router.push({
+            path: `/dashboard/${response.data.user.id}`,
+        });
+    } catch (error) {
+        loginError.value = error;
+        console.log(error);
+    }
+}
 </script>
 
 <template>
@@ -28,6 +66,7 @@ function handleLogin() {}
                         type="email"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        v-model="emailValue"
                     />
                 </div>
 
@@ -41,6 +80,7 @@ function handleLogin() {}
                         id="password"
                         type="password"
                         required
+                        v-model="passwordValue"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:focus:ring-orange-500"
                     />
                 </div>
@@ -52,7 +92,12 @@ function handleLogin() {}
                     Login
                 </button>
             </form>
-
+            <p
+                v-if="loginError"
+                class="text-center relative top-2 text-red-500"
+            >
+                Invalid Credentials
+            </p>
             <p class="text-sm text-center text-gray-600 mt-6">
                 Don’t have an account?
                 <RouterLink

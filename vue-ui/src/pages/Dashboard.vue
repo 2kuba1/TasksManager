@@ -1,6 +1,36 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import AppBar from "../components/AppBar.vue";
+import { useRoute, useRouter } from "vue-router";
+import axios from "axios";
+import getCookie from "../utils/getCookie";
+
+const route = useRoute();
+const router = useRouter();
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(
+            "http://localhost:8000/api/v1/users/getUser",
+            {
+                headers: {
+                    Authorization: `Bearer ${getCookie("token")}`,
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        if (
+            response.data.id != localStorage.getItem("id") &&
+            response.data.id != route.params.id
+        ) {
+            router.push("/login");
+        }
+    } catch (error) {
+        console.error("AUTH ERROR:", error);
+        router.push("/login");
+    }
+});
 
 const tasks = ref([{ id: 1, title: "xd", completed: false }]);
 
