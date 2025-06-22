@@ -43,7 +43,7 @@ class TaskService implements TaskServiceInterface
 
     public function update($request): Task
     {
-        $task = $this->getById($request->get('id'));
+        $task = Task::findOrFail($request->id);
 
         if($task['user_id'] != auth()->user()->id) {
             abort(400);
