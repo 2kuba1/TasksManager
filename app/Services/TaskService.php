@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Services\Contracts\TaskServiceInterface;
 use App\Models\Task;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
 
 class TaskService implements TaskServiceInterface
@@ -46,7 +47,7 @@ class TaskService implements TaskServiceInterface
         $task = Task::findOrFail($request->id);
 
         if($task['user_id'] != auth()->user()->id) {
-            abort(400);
+            throw new AuthorizationException('You are not authorized to access this task.');
         }
 
         $data = $request->validated();
@@ -61,10 +62,10 @@ class TaskService implements TaskServiceInterface
 
     public function delete($id): bool
     {
-        $task = $this->getById($id);
+        $task = Task::findOrFail($id);
 
         if($task['user_id'] != auth()->user()->id) {
-            abort(400);
+            throw new AuthorizationException('You are not authorized to access this task.');
         }
 
         $task->delete();

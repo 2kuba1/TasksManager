@@ -22,7 +22,7 @@ class DeleteTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'uuid'],
+            'id' => ['required', 'int'],
         ];
     }
 }
