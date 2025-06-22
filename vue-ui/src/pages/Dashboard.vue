@@ -8,6 +8,10 @@ import getCookie from "../utils/getCookie";
 const route = useRoute();
 const router = useRouter();
 
+const tasks = ref([]);
+const newTask = ref("");
+const apiError = ref(null);
+
 onMounted(async () => {
     try {
         const response = await axios.get(
@@ -30,36 +34,104 @@ onMounted(async () => {
         console.error("AUTH ERROR:", error);
         router.push("/login");
     }
+
+    try {
+        const response = await axios.get(
+            "http://localhost:8000/api/v1/tasks/",
+            {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${getCookie("token")}`,
+                },
+            }
+        );
+
+        tasks.value = response.data.data;
+    } catch (error) {
+        console.log(error);
+    }
 });
 
-const tasks = ref([{ id: 1, title: "xd", completed: false }]);
-
-const newTask = ref("");
-
-function addTask() {
+async function addTask() {
+    apiError.value = null;
     if (newTask.value.trim() === "") return;
     tasks.value.push({
         id: Date.now(),
         title: newTask.value.trim(),
         completed: false,
     });
+
+    try {
+        await axios.post(
+            "http://localhost:8000/api/v1/tasks/create",
+            {
+                name: newTask.value,
+                is_completed: 0,
+            },
+            {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${getCookie("token")}`,
+                },
+            }
+        );
+    } catch (error) {
+        apiError.value = "Error occured while adding task to database";
+    }
+
     newTask.value = "";
 }
 
-function toggleTaskCompletion(taskId) {
+async function toggleTaskCompletion(taskId) {
+    console.log(tasks);
+    apiError.value = null;
     const task = tasks.value.find((t) => t.id === taskId);
     if (task) task.completed = !task.completed;
+
+    try {
+        await axios.put(
+            "http://localhost:8000/api/v1/tasks/update",
+            {
+                id: taskId,
+                is_completed: task.completed,
+            },
+            {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${getCookie("token")}`,
+                },
+            }
+        );
+    } catch (error) {
+        console.log(error);
+        apiError.value = "Error occured while updating task in database";
+    }
 }
 
-function deleteTask(taskId) {
+async function deleteTask(taskId) {
+    apiError.value = null;
     tasks.value = tasks.value.filter((t) => t.id !== taskId);
+    try {
+        await axios.delete("http://localhost:8000/api/v1/tasks/delete", {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${getCookie("token")}`,
+            },
+            data: {
+                id: taskId,
+            },
+        });
+    } catch (error) {
+        console.log(error);
+        apiError.value = "Error occured while deleting task in database";
+    }
 }
 </script>
 
 <template>
     <AppBar />
     <div
-        class="min-h-[calc(100vh-4rem)] bg-gradient-to-br px-4 py-8 font-primary"
+        class="min-h-[calc(100vh-4rem)] bg-gradient-to-br px-4 py-8 font-primary max-w-screen overflow-x-hidden"
     >
         <div class="max-w-3xl mx-auto">
             <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">
@@ -93,29 +165,34 @@ function deleteTask(taskId) {
                     <div class="flex items-center space-x-4">
                         <input
                             type="checkbox"
-                            :checked="task.completed"
+                            :checked="task.is_completed"
                             @change="toggleTaskCompletion(task.id)"
                             class="w-5 h-5 text-orange-500 focus:ring-orange-500"
                         />
                         <span
                             :class="{
-                                'line-through text-gray-400': task.completed,
-                                'text-gray-800': !task.completed,
+                                'line-through text-gray-400': task.is_completed,
+                                'text-gray-800': !task.is_completed,
                             }"
                             class="text-lg font-medium"
                         >
-                            {{ task.title }}
+                            {{ task.name }}
                         </span>
                     </div>
 
                     <button
                         @click="deleteTask(task.id)"
-                        class="text-red-500 hover:text-red-600 font-semibold transition"
+                        class="text-red-500 hover:text-red-600 font-semibold transition cursor-pointer"
                     >
                         Delete
                     </button>
                 </div>
-
+                <p
+                    v-if="apiError"
+                    class="text-center relative top-2 text-red-500"
+                >
+                    {{ apiError }}
+                </p>
                 <div
                     v-if="tasks.length === 0"
                     class="text-center text-gray-600 mt-8"

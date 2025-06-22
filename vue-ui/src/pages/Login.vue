@@ -13,6 +13,7 @@ const route = useRoute();
 async function handleLogin() {
     route.params.success = "";
     loginErrorRef.value = "";
+
     try {
         const response = await axios.post(
             "http://localhost:8000/api/v1/users/login",
@@ -67,7 +68,7 @@ async function handleLogin() {
                         type="email"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        v-model="emailValue"
+                        v-model="emailRef"
                     />
                 </div>
 
@@ -81,7 +82,7 @@ async function handleLogin() {
                         id="password"
                         type="password"
                         required
-                        v-model="passwordValue"
+                        v-model="passwordRef"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:focus:ring-orange-500"
                     />
                 </div>

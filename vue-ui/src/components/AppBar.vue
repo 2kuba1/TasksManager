@@ -4,7 +4,7 @@ import { RouterLink } from "vue-router";
 
 <template>
     <header
-        class="w-dvw border-b-2 border-orange-500 h-16 font-primary lg:flex lg:flex-row lg:items-center lg:justify-between lg:px-20"
+        class="w-full border-b-2 border-orange-500 h-16 font-primary flex flex-row items-center justify-center lg:justify-between px-4 lg:px-20 overflow-hidden"
     >
         <RouterLink
             to="/"
