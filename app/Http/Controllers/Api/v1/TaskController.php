@@ -41,20 +41,32 @@ class TaskController extends Controller
         return TaskResource::collection($this->taskService->getCompletedTasks());
     }
 
-    public function create(StoreTaskRequest  $request) : JsonResource
+    public function create(StoreTaskRequest  $request)
     {
-        $task = $this->taskService->create($request);
+        if (Gate::denies('create', Task::class)) {
+            abort(403);
+        }
+
+        $task = $this->taskService->create($request, auth()->user()->id);
         return $task->toResource();
     }
 
     public function update(UpdateTaskRequest $request) : JsonResource
     {
+        if (Gate::denies('update', Task::class)) {
+            abort(403);
+        }
+
         $updatedTask = $this->taskService->update($request);
         return $updatedTask->toResource();
     }
 
     public function delete(DeleteTaskRequest $request) : Response
     {
+        if (Gate::denies('delete', Task::class)) {
+            abort(403);
+        }
+
         $this->taskService->delete($request->input('id'));
         return response()->noContent();
     }

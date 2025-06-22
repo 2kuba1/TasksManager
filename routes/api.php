@@ -12,11 +12,11 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1/tasks')->group(function (){
     Route::get('/getCompleted', [TaskController::class, 'getCompleted']);
-    Route::get('/', [TaskController::class, 'getAll'])->middleware('auth:sanctum');
+    Route::get('/', [TaskController::class, 'getAll'])->middleware(['auth:sanctum', 'api']);
     Route::get('/{id}', [TaskController::class, 'getById']);
-    Route::post('/create', [TaskController::class, 'create']);
-    Route::put('/update', [TaskController::class, 'update']);
-    Route::delete('/delete', [TaskController::class, 'delete']);
+    Route::post('/create', [TaskController::class, 'create'])->middleware('auth:sanctum');
+    Route::put('/update', [TaskController::class, 'update'])->middleware(['auth:sanctum', 'api']);
+    Route::delete('/delete', [TaskController::class, 'delete'])->middleware(['auth:sanctum', 'api']);
 });
 
 Route::prefix('v1/users')->group(function (){

@@ -18,7 +18,6 @@ class UserService implements UserServiceInterface
         $validatedRequest = $request->validated();
 
        User::create([
-           'id' => Str::uuid()->toString(),
            'name' => $validatedRequest['name'],
            'email' => $validatedRequest['email'],
            'password' => bcrypt($validatedRequest['password']),

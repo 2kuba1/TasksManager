@@ -23,7 +23,7 @@ use Illuminate\Foundation\Http\FormRequest;
     public function rules(): array
     {
         return [
-            'id' => ['required', 'uuid'],
+            'id' => ['required', 'int'],
             'name' => ['string', 'max:255'],
             'is_completed' => ['boolean'],
         ];

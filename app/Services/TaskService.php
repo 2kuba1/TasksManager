@@ -11,11 +11,17 @@ class TaskService implements TaskServiceInterface
 
     public function getAll(): Collection
     {
-        return Task::all();
+        return Task::where('user_id', '=', auth()->user()->id)->get();
     }
 
     public function getById($id): Task
     {
+        $task = $this->getById($id);
+
+        if($task['user_id'] != auth()->user()->id) {
+            abort(400);
+        }
+
         return Task::findOrFail($id);
     }
 
@@ -24,14 +30,24 @@ class TaskService implements TaskServiceInterface
         return Task::where('is_completed', true)->get()->all();
     }
 
-    public function create($request): Task
+    public function create($request, int $id): Task
     {
-        return Task::create($request->validated());
+        $validatedRequest = $request->validated();
+
+        return Task::create([
+            'name' =>  $validatedRequest['name'],
+            'is_completed' => $validatedRequest['is_completed'],
+            'user_id' => $id,
+        ]);
     }
 
     public function update($request): Task
     {
         $task = $this->getById($request->get('id'));
+
+        if($task['user_id'] != auth()->user()->id) {
+            abort(400);
+        }
 
         $data = $request->validated();
 
@@ -45,7 +61,13 @@ class TaskService implements TaskServiceInterface
 
     public function delete($id): bool
     {
-        Task::where('id', $id)->delete();
+        $task = $this->getById($id);
+
+        if($task['user_id'] != auth()->user()->id) {
+            abort(400);
+        }
+
+        $task->delete();
         return true;
     }
 }
