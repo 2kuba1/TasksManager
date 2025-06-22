@@ -14,6 +14,18 @@ class User extends Model
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
+    protected $fillable = ['id', 'name', 'email', 'password', 'user_id'];
+
+
+    protected $hidden = [
+        'password',
+        'created_at',
+        'updated_at',
+    ];
+
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     public function role() : BelongsTo
     {
         return $this->belongsTo(Role::class);
@@ -28,16 +40,4 @@ class User extends Model
     {
         return $this->hasMany(Task::class);
     }
-
-    protected $fillable = ['id', 'name', 'email', 'password', 'user_id'];
-
-
-    protected $hidden = [
-        'password',
-        'created_at',
-        'updated_at',
-    ];
-
-    public $incrementing = false;
-    protected $keyType = 'string';
 }
