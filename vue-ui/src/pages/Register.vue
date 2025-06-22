@@ -1,7 +1,54 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import AppBar from "../components/AppBar.vue";
-function handleRegister() {}
+import { ref } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const nameRef = ref("");
+const emailRef = ref("");
+const passwordRef = ref("");
+const confirmPasswordRef = ref("");
+const validationErrorRef = ref(null);
+
+async function handleRegister() {
+    validationErrorRef.value = null;
+    if (confirmPasswordRef.value !== passwordRef.value) {
+        validationErrorRef.value = "Passwords are not the same";
+        return;
+    }
+
+    const passwordRegex =
+        /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    if (!passwordRegex.test(passwordRef)) {
+        validationErrorRef.value =
+            "Password should be at least 8 signs long, contain one big letter, one special sign and one number";
+        return;
+    }
+
+    try {
+        await axios.post(
+            "http://localhost:8000/api/v1/users/register",
+            {
+                name: nameRef.value,
+                email: emailRef.value,
+                password: passwordRef.value,
+            },
+            {
+                headers: {
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        router.push("/login/loginSuccess");
+    } catch (error) {
+        validationErrorRef.value = error.message;
+    }
+}
 </script>
 
 <template>
@@ -28,6 +75,7 @@ function handleRegister() {}
                         type="text"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        v-model="nameRef"
                     />
                 </div>
 
@@ -42,6 +90,7 @@ function handleRegister() {}
                         type="email"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        v-model="emailRef"
                     />
                 </div>
 
@@ -56,6 +105,7 @@ function handleRegister() {}
                         type="password"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        v-model="passwordRef"
                     />
                 </div>
 
@@ -70,6 +120,7 @@ function handleRegister() {}
                         type="password"
                         required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        v-model="confirmPasswordRef"
                     />
                 </div>
 
@@ -80,7 +131,12 @@ function handleRegister() {}
                     Register
                 </button>
             </form>
-
+            <p
+                v-if="validationErrorRef"
+                class="text-center relative top-2 text-red-500"
+            >
+                {{ validationErrorRef }}
+            </p>
             <p class="text-sm text-center text-gray-600 mt-6">
                 Already have an account?
                 <RouterLink

@@ -15,7 +15,7 @@ import AppBar from "../components/AppBar.vue";
             Login
         </RouterLink>
         <RouterLink
-            to="/rgister"
+            to="/register"
             class="h-14 w-24 border-2 border-orange-500 text-orange-500 rounded-2xl hover:scale-125 transition flex items-center justify-center"
         >
             Register

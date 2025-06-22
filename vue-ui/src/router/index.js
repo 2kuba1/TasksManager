@@ -9,7 +9,7 @@ import Contact from "../pages/Contact.vue";
 const routes = [
     { path: "/", name: "Home", component: Home },
     { path: "/about", name: "About", component: About },
-    { path: "/login", name: "Login", component: Login },
+    { path: "/login/:success?", name: "Login", component: Login },
     { path: "/register", name: "Register", component: Register },
     { path: "/dashboard/:id", name: "Dashboard", component: Dashboard },
     { path: "/contact", name: "Contact", component: Contact },

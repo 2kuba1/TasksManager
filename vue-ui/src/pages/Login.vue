@@ -1,23 +1,24 @@
 <script setup>
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import AppBar from "../components/AppBar.vue";
 import axios from "axios";
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 
-const emailValue = ref("");
-const passwordValue = ref("");
-const loginError = ref(null);
+const emailRef = ref("");
+const passwordRef = ref("");
+const loginErrorRef = ref(null);
 const router = useRouter();
+const route = useRoute();
 
 async function handleLogin() {
-    loginError.value = "";
+    route.params.success = "";
+    loginErrorRef.value = "";
     try {
         const response = await axios.post(
             "http://localhost:8000/api/v1/users/login",
             {
-                email: emailValue.value,
-                password: passwordValue.value,
+                email: emailRef.value,
+                password: passwordRef.value,
             },
             {
                 headers: {
@@ -36,7 +37,7 @@ async function handleLogin() {
             path: `/dashboard/${response.data.user.id}`,
         });
     } catch (error) {
-        loginError.value = error;
+        loginErrorRef.value = error;
         console.log(error);
     }
 }
@@ -93,10 +94,16 @@ async function handleLogin() {
                 </button>
             </form>
             <p
-                v-if="loginError"
+                v-if="loginErrorRef"
                 class="text-center relative top-2 text-red-500"
             >
                 Invalid Credentials
+            </p>
+            <p
+                v-if="route.params.success == 'loginSuccess'"
+                class="text-green-500 text-center relative top-2"
+            >
+                Registered successfully
             </p>
             <p class="text-sm text-center text-gray-600 mt-6">
                 Don’t have an account?
