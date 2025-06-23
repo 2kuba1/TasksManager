@@ -57,7 +57,7 @@ async function addTask() {
     if (newTask.value.trim() === "") return;
     tasks.value.push({
         id: Date.now(),
-        title: newTask.value.trim(),
+        name: newTask.value.trim(),
         completed: false,
     });
 
@@ -83,17 +83,17 @@ async function addTask() {
 }
 
 async function toggleTaskCompletion(taskId) {
-    console.log(tasks);
     apiError.value = null;
     const task = tasks.value.find((t) => t.id === taskId);
-    if (task) task.completed = !task.completed;
+    if (task) task.is_completed = !task.is_completed;
+    console.log(tasks);
 
     try {
         await axios.put(
             "http://localhost:8000/api/v1/tasks/update",
             {
                 id: taskId,
-                is_completed: task.completed,
+                is_completed: task.is_completed,
             },
             {
                 headers: {

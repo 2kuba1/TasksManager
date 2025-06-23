@@ -46,7 +46,10 @@ async function handleLogout() {
                 :to="tasksPageRedirectUrl"
                 >TASKS</RouterLink
             >
-            <hr class="h-px my-8 bg-gray-200 border-1 dark:bg-gray-700" />
+            <hr
+                v-if="loggedRef"
+                class="h-px my-8 bg-gray-200 border-1 dark:bg-gray-700"
+            />
 
             <RouterLink class="hover:scale-110 transition" to="/about"
                 >ABOUT</RouterLink
