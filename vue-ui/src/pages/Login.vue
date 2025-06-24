@@ -45,9 +45,9 @@ async function handleLogin() {
 </script>
 
 <template>
-    <AppBar :logged="true" />
+    <AppBar />
     <div
-        class="h-[calc(100vh-4rem)] bg-gradient-to-br flex items-center justify-center px-4 font-primary"
+        class="h-[calc(100vh-4rem)] flex items-center justify-center px-4 font-primary"
     >
         <div
             class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border-2 border-orange-500"

@@ -4,6 +4,7 @@ import AppBar from "../components/AppBar.vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import getCookie from "../utils/getCookie";
+import EditTaskForm from "../components/EditTaskForm.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -11,6 +12,8 @@ const router = useRouter();
 const tasks = ref([]);
 const newTask = ref("");
 const apiError = ref(null);
+
+const editRef = ref(false);
 
 onMounted(async () => {
     try {
@@ -126,13 +129,39 @@ async function deleteTask(taskId) {
         apiError.value = "Error occured while deleting task in database";
     }
 }
+
+function editTask(taskId) {
+    const task = tasks.value.find((x) => x.id === taskId);
+    editRef.value = task;
+}
+
+function handleEditTaskClose() {
+    editRef.value = null;
+}
+
+function handleEdited(newName, taskId) {
+    const task = tasks.value.find((x) => x.id === taskId);
+    if (task) {
+        task.name = newName;
+    }
+}
 </script>
 
 <template>
     <AppBar />
     <div
-        class="min-h-[calc(100vh-4rem)] bg-gradient-to-br px-4 py-8 font-primary max-w-screen overflow-x-hidden"
+        class="min-h-[calc(100vh-4rem)] px-4 py-8 font-primary max-w-screen overflow-x-hidden z-0"
     >
+        <div
+            v-if="editRef"
+            class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30"
+        >
+            <EditTaskForm
+                @close="handleEditTaskClose"
+                @edited="handleEdited"
+                :task="editRef"
+            />
+        </div>
         <div class="max-w-3xl mx-auto">
             <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">
                 Your Tasks
@@ -179,13 +208,20 @@ async function deleteTask(taskId) {
                             {{ task.name }}
                         </span>
                     </div>
-
-                    <button
-                        @click="deleteTask(task.id)"
-                        class="text-red-500 hover:text-red-600 font-semibold transition cursor-pointer"
-                    >
-                        Delete
-                    </button>
+                    <div class="flex gap-3">
+                        <button
+                            @click="editTask(task.id)"
+                            class="text-blue-500 hover:text-blue-600 font-semibold transition cursor-pointer"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            @click="deleteTask(task.id)"
+                            class="text-red-500 hover:text-red-600 font-semibold transition cursor-pointer"
+                        >
+                            Delete
+                        </button>
+                    </div>
                 </div>
                 <p
                     v-if="apiError"
