@@ -19,7 +19,7 @@ async function handleEdit() {
 
     try {
         await axios.put(
-            "http://localhost:8000/api/v1/tasks/update",
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/tasks/update`,
             {
                 id: props.task.id,
                 name: newNameRef.value,

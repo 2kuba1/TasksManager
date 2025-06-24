@@ -23,7 +23,7 @@ async function handleRegister() {
     const passwordRegex =
         /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
-    if (!passwordRegex.test(passwordRef)) {
+    if (!passwordRegex.test(passwordRef.value)) {
         validationErrorRef.value =
             "Password should be at least 8 signs long, contain one big letter, one special sign and one number";
         return;
@@ -31,7 +31,7 @@ async function handleRegister() {
 
     try {
         await axios.post(
-            "http://localhost:8000/api/v1/users/register",
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/users/register`,
             {
                 name: nameRef.value,
                 email: emailRef.value,

@@ -11,12 +11,16 @@ const tasksPageRedirectUrl = "/dashboard/" + localStorage.getItem("id");
 
 async function handleLogout() {
     try {
-        await axios.post("http://localhost:8000/api/v1/users/logout", null, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${getCookie("token")}`,
-            },
-        });
+        await axios.post(
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/users/logout`,
+            null,
+            {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${getCookie("token")}`,
+                },
+            }
+        );
 
         document.cookie =
             "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";

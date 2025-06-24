@@ -18,7 +18,7 @@ const editRef = ref(false);
 onMounted(async () => {
     try {
         const response = await axios.get(
-            "http://localhost:8000/api/v1/users/getUser",
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/users/getUser`,
             {
                 headers: {
                     Authorization: `Bearer ${getCookie("token")}`,
@@ -40,7 +40,7 @@ onMounted(async () => {
 
     try {
         const response = await axios.get(
-            "http://localhost:8000/api/v1/tasks/",
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/tasks/`,
             {
                 headers: {
                     Accept: "application/json",
@@ -66,7 +66,7 @@ async function addTask() {
 
     try {
         await axios.post(
-            "http://localhost:8000/api/v1/tasks/create",
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/tasks/create`,
             {
                 name: newTask.value,
                 is_completed: 0,
@@ -93,7 +93,7 @@ async function toggleTaskCompletion(taskId) {
 
     try {
         await axios.put(
-            "http://localhost:8000/api/v1/tasks/update",
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/tasks/update`,
             {
                 id: taskId,
                 is_completed: task.is_completed,
@@ -115,15 +115,18 @@ async function deleteTask(taskId) {
     apiError.value = null;
     tasks.value = tasks.value.filter((t) => t.id !== taskId);
     try {
-        await axios.delete("http://localhost:8000/api/v1/tasks/delete", {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${getCookie("token")}`,
-            },
-            data: {
-                id: taskId,
-            },
-        });
+        await axios.delete(
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/tasks/delete`,
+            {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${getCookie("token")}`,
+                },
+                data: {
+                    id: taskId,
+                },
+            }
+        );
     } catch (error) {
         console.log(error);
         apiError.value = "Error occured while deleting task in database";
@@ -179,7 +182,7 @@ function handleEdited(newName, taskId) {
                 />
                 <button
                     type="submit"
-                    class="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-400 transition"
+                    class="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-400 transition cursor-pointer"
                 >
                     Add
                 </button>

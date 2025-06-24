@@ -16,7 +16,7 @@ async function handleLogin() {
 
     try {
         const response = await axios.post(
-            "http://localhost:8000/api/v1/users/login",
+            `${import.meta.env.VITE_API_ENDPOINT}/api/v1/users/login`,
             {
                 email: emailRef.value,
                 password: passwordRef.value,
